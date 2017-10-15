@@ -29,7 +29,7 @@ module Videos
     end
 
     def persist_screenshot(video, file)
-      VideoScreenshot.create(video: video, file: file)
+      VideoScreenshot.create!(video: video, file: file)
     end
   end
 end

@@ -4,15 +4,20 @@ class BaseOperation
   end
 
   class Status
-    def self.success(value = nil) new(status: :success, value: value) end
-    def self.failed(error) new(status: :failed, error: error) end
+    def self.success(value = nil)
+      new(status: :success, value: value)
+    end
 
-    attr_reader :value, :error
+    def self.failed(errors = [])
+      new(status: :failed, errors: errors)
+    end
 
-    def initialize(status:, value: nil, error: nil)
+    attr_reader :value, :errors
+
+    def initialize(status:, value: nil, errors: [])
       @status = status
       @value = value
-      @error = error
+      @errors = Array(errors)
     end
 
     def success?
@@ -20,7 +25,7 @@ class BaseOperation
     end
 
     def failed?
-      @status == :error
+      @status == :failed
     end
 
     def on_success
@@ -28,7 +33,7 @@ class BaseOperation
     end
 
     def on_failed
-      yield(error) if @status == :failed
+      yield(errors) if @status == :failed
     end
   end
 end

@@ -21,7 +21,7 @@ module Videos
     end
 
     def create_video_report(video_file, data)
-      VideoReport.create(
+      VideoReport.create!(
         duration: data.duration,
         size: data.size,
         resolution: data.resolution,

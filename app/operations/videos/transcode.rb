@@ -29,7 +29,7 @@ module Videos
     end
 
     def persist_transcoded_file(video, file)
-      VideoFile.create(video: video, file: file, version: :processed)
+      VideoFile.create!(video: video, file: file, version: :processed)
     end
   end
 end

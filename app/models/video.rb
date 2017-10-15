@@ -1,5 +1,5 @@
 class Video < ApplicationRecord
-  enum status: %i(pending processing finished)
+  enum status: %i(pending processing finished failed)
 
   has_many :video_files, dependent: :destroy
   has_many :video_reports, through: :video_files

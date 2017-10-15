@@ -1,7 +1,10 @@
 .row
   .col-sm-12.col-md-6
-    = simple_form_for video do |f|
+    = simple_form_for :video, url: videos_path do |f|
       = f.input :title
-      = f.simple_fields_for :video_files do |ff|
-        = ff.input :file, as: :file
+      = f.input :file, as: :file
       = f.button :submit, 'Upload Video'
+
+    - if errors.present?
+      - errors.each do |msg|
+        %p{ style: 'font-weight: bold;'}= msg

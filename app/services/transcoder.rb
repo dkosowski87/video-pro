@@ -2,24 +2,25 @@ class Transcoder
   class TranscodingFailed < StandardError; end
 
   def transcode(input:, filename:, &output_policy)
-    input = wrap_input_data(input)
-    output = build_output_path(filename, video_format)
-
-    run(input, output, encoding_options)
-    expose_output_file(output, output_policy)
-    clean_up_temp_file(output)
+    execute!(input, filename, video_format, encoding_options, output_policy)
   end
 
   def screenshot(input:, filename:, &output_policy)
-    input = wrap_input_data(input)
-    output = build_output_path(filename, image_format)
-
-    run(input, output, screenshot: true)
-    expose_output_file(output, output_policy)
-    clean_up_temp_file(output)
+    execute!(input, filename, image_format, { screenshot: true }, output_policy)
   end
 
   private
+
+  def execute!(input, filename, file_format, options, output_policy)
+    input = wrap_input_data(input)
+    output = build_output_path(filename, file_format)
+
+    transcode!(input, output, options)
+    expose_output_file(output, output_policy)
+    clean_up_temp_file(output)
+  rescue FFMPEG::Error
+    raise TranscodingFailed
+  end
 
   def wrap_input_data(input)
     input = input.to_path if input.respond_to?(:to_path)
@@ -39,10 +40,8 @@ class Transcoder
     'jpg'
   end
 
-  def run(input, output, options = {})
+  def transcode!(input, output, options = {})
     FFMPEG::Transcoder.new(input, output, options, {}).run
-  rescue FFMPEG::Error
-    raise TranscodingFailed
   end
 
   def encoding_options

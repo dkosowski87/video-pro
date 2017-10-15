@@ -22,7 +22,7 @@ gem 'haml'
 gem 'bootstrap-sass'
 gem 'simple_form'
 gem 'virtus'
-gem 'draper'
+gem 'draper', git: 'https://github.com/drapergem/draper.git', branch: 'master'
 
 gem 'carrierwave'
 gem 'streamio-ffmpeg'

@@ -3,29 +3,44 @@ module Videos
     queue_as :default
 
     def perform(video)
-      video.processing!
+      ActiveRecord::Base.transaction do
+        video.processing!
 
-      transcode_video(video).on_success do |video|
-        extract_metadata_from_video(video).on_success do |video|
-          take_video_screenshot(video)
+        operations(video).each do |name, operation|
+          result = operation.call
+
+          result.on_success do
+            Sidekiq::Logging.logger.info("#{name.to_s.titleize}: completed!")
+          end
+
+          result.on_failed do
+            video.failed!
+            cleanup_after_processing_failed(video)
+            expose_error
+          end
         end
-      end
 
-      video.finished!
+        video.finished!
+      end
     end
 
     private
 
-    def transcode_video(video)
-      Transcode.call(video)
+    def operations(video)
+      {
+        transcode_video: -> { Transcode.call(video) },
+        extract_metadata_from_video: -> { ExtractMetadata.call(video) },
+        take_video_screenshot: -> { TakeScreenshot.call(video) }
+      }
     end
 
-    def extract_metadata_from_video(video)
-      ExtractMetadata.call(video)
+    def cleanup_after_processing_failed(video)
+      CleanUp.call(video)
     end
 
-    def take_video_screenshot(video)
-      TakeScreenshot.call(video)
+    def expose_error
+      Sidekiq::Logging.logger.info('Processing failed!')
+      raise ActiveRecord::Rollback
     end
   end
 end

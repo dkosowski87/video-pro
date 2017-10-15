@@ -1,16 +1,16 @@
 class VideosController < ApplicationController
-  def index
-    render :index, locals: { videos: VideoDecorator.decorate_collection(videos) }
+  def new
+    render :new, locals: { errors: [] }
   end
 
-  def new
-    render :new, locals: { video: Video.new }
+  def index
+    render :index, locals: { videos: VideoDecorator.decorate_collection(videos) }
   end
 
   def create
     result = Videos::Upload.call(video_params)
     result.on_success { redirect_to videos_path }
-    result.on_failed { |error| redirect_to new_video_path, alert: error }
+    result.on_failed { |errors| render :new, locals: { errors: errors } }
   end
 
   def show
@@ -28,6 +28,6 @@ class VideosController < ApplicationController
   end
 
   def video_params
-    params.require(:video).permit(:title, video_files: :file)
+    params.require(:video).permit(:title, :file)
   end
 end

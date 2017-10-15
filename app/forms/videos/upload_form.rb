@@ -1,12 +1,8 @@
 module Videos
   class UploadForm < BaseForm
     attribute :title, String
-    attribute :video_files, Hash
+    attribute :file, ActionDispatch::Http::UploadedFile
 
-    validates :title, :video_files, presence: true
-
-    def file
-      video_files['file']
-    end
+    validates :title, :file, presence: true
   end
 end

@@ -2,10 +2,11 @@ module Videos
   class Upload < BaseOperation
     def call(data)
       form = UploadForm.new(data)
-      return Status.failed(form.errors) unless form.valid?
+      return Status.failed(form.errors.full_messages) unless form.valid?
 
       video = create_video(form.title)
       persist_original_video_file(video, form.file)
+
       video.pending!
       process_video(video)
 

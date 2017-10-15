@@ -1,0 +1,13 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  username: postgres
+  pool: 5
+
+development:
+  <<: *default
+  database: video_pro_development
+
+test:
+  <<: *default
+  database: video_pro_test

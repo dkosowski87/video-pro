@@ -1,0 +1,4 @@
+.row
+  .col-sm-12{style: 'width: 100%;'}
+    %h3= video.title
+    = video_tag(video.processed_file.file, size: '600x600', controls: true)

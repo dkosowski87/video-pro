@@ -1,0 +1,7 @@
+.row
+  .col-sm-12.col-md-6
+    = simple_form_for video do |f|
+      = f.input :title
+      = f.simple_fields_for :video_files do |ff|
+        = ff.input :file, as: :file
+      = f.button :submit, 'Upload Video'
